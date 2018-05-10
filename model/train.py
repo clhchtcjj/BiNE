@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 __author__ = 'CLH'
 
 from argparse import ArgumentParser, FileType, ArgumentDefaultsHelpFormatter
@@ -174,7 +176,7 @@ def top_N(test_u, test_v, test_rate, node_list_u, node_list_v, top_n):
         ndcg_list.append(ndcg)
     precison = sum(precision_list) / len(precision_list)
     recall = sum(recall_list) / len(recall_list)
-    print(precison, recall)
+    #print(precison, recall)
     f1 = 2 * precison * recall / (precison + recall)
     map = sum(ap_list) / len(ap_list)
     mrr = sum(rr_list) / len(rr_list)
@@ -260,7 +262,7 @@ def train(args):
     alpha, beta, gamma, lam = args.alpha, args.beta, args.gamma, args.lam
     print('======== experiment settings =========')
     print('alpha : %0.4f, beta : %0.4f, gamma : %0.4f, lam : %0.4f, p : %0.4f, ws : %d, ns : %d, maxT : % d, minT : %d, max_iter : %d' % (alpha, beta, gamma, lam, args.p, args.ws, args.ns,args.maxT,args.minT,args.max_iter))
-    print("processing data....")
+    print('========== processing data ===========')
     dul = DataUtils(model_path)
     test_user, test_item, test_rate = dul.read_data(args.test_data)
     print("constructing graph....")
@@ -277,7 +279,7 @@ def train(args):
     # pre_train(node_list_u,node_list_v,edge_list,edge_dict_u,args)
 
     last_loss, count, epsilon = 0, 0, 1e-3
-    print("\ntraining....")
+    print("============== training ==============")
     for iter in range(0, args.max_iter):
         s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(args.max_iter-iter),iter*100.0/(args.max_iter-1))
         loss = 0
@@ -325,14 +327,11 @@ def train(args):
         else:
             lam *= 0.95
         last_loss = loss
-	if count % 10 == 0:
-            f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
-            print('iter : %d, lambda : %f,loss : %f, deltloss : %f, F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (count, lam,loss, delta_loss, f1, map, mrr, mndcg))
         if delta_loss < epsilon:
             break
         sys.stdout.write(s1)
         sys.stdout.flush()
-    print "training is ok"
+    print "\ntraining is ok"
     f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
     print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (f1, map, mrr, mndcg))
     save_to_file(node_list_u,node_list_v,model_path,args)
@@ -358,10 +357,10 @@ def main():
                             formatter_class=ArgumentDefaultsHelpFormatter,
                             conflict_handler='resolve')
 
-    parser.add_argument('--train-data', default=r'../data/m1000/rating_train.dat',
+    parser.add_argument('--train-data', default=r'../data/rating_train.dat',
                         help='Input graph file.')
 
-    parser.add_argument('--test-data', default=r'../data/m1000/rating_test.dat')
+    parser.add_argument('--test-data', default=r'../data/rating_test.dat')
     parser.add_argument('--model-name', default='default',
                         help='name of model.')
 
@@ -394,7 +393,7 @@ def main():
 
     parser.add_argument('--lam', default=0.01, type=float,
                         help='learning rate lambda')
-    parser.add_argument('--max-iter', default=60, type=int,
+    parser.add_argument('--max-iter', default=50, type=int,
                         help='maximal number of iterations ')
 
     parser.add_argument('--top-n', default=10, type=int,

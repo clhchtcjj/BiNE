@@ -35,9 +35,9 @@ Number of negative samples. Default is 4 (--ns)
 Size of window. Default is 5 (--ws)
 Trade-off parameter $\alpha$. Default is 0.01 (--alpha)
 Trade-off parameter $\beta$. Default is 0.01 (--beta)
-Trade-off parameter $\gamma$. Default is 0.1 (--beta)
+Trade-off parameter $\gamma$. Default is 0.1 (--gamma)
 Learning rate $\lambda$. Default is 0.01 (--lam)
-Maximal iterations. Default is 100 (--max-iters)
+Maximal iterations. Default is 50 (--max-iters)
 Maximal walks per vertex. Default is 32 (--maxT)
 Minimal walks per vertex. Default is 1 (--minT)
 Walk stopping probability. Default is 0.15 (--p)
@@ -66,7 +66,7 @@ The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and
 
 
 
-## Examples
+## Example
 
 **Run**
 
@@ -75,12 +75,12 @@ cd model
 python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100
 ```
 
-**output** (training process)
+**Output** (training process)
 
 ```
 ======== experiment settings =========
 alpha : 0.0100, beta : 0.0100, gamma : 0.1000, lam : 0.0250, p : 0.1500, ws : 5, ns : 4, maxT :  32, minT : 1, max_iter : 100
-processing data....
+========== processing data ===========
 constructing graph....
 number of nodes: 6001
 walking...
@@ -94,16 +94,13 @@ context...
 context...ok
 context...
 context...ok
-pre-training....
+============== training ==============
 [*************************************************************************************************** ]100.00%
-training...
-[*************************************************************************************************** ]100.00%
-
 ```
 
-**output** (testing process)
+**Output** (testing process)
 
 ```
-recommendation metrics: F1 : 0.0514, MAP : 0.0142, MRR : 0.3552, NDCG : 0.0543
+recommendation metrics: F1 : 0.1136, MAP : 0.2016, MRR : 0.3321, NDCG : 0.2589
 ```
 

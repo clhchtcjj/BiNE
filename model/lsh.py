@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 __author__ = 'CLH'
 from datasketch import MinHashLSHForest, MinHash
 import random
@@ -16,7 +18,7 @@ def construct_lsh(obj_dict):
     forest.index()
     return forest, keys, ms
 
-def get_negs_by_lsh(user_dict, item_dict, k=150,sample_num=150):
+def get_negs_by_lsh(user_dict, item_dict, k=200,sample_num=200):
     negs_u = call_get_negs_by_lsh(k,sample_num,user_dict)
     negs_v = call_get_negs_by_lsh(k,sample_num,item_dict)
     return negs_u,negs_v
