@@ -33,10 +33,10 @@ Name of model. Default is 'default' (--model-name)
 Number of dimensions. Default is 128 (--d)
 Number of negative samples. Default is 4 (--ns)
 Size of window. Default is 5 (--ws)
-Trade-off parameter \alpha. Default is 0.01 (--alpha)
-Trade-off parameter \beta. Default is 0.01 (--beta)
-Trade-off parameter \gamma. Default is 0.1 (--beta)
-Learning rate \lambda. Default is 0.01 (--lam)
+Trade-off parameter $\alpha$. Default is 0.01 (--alpha)
+Trade-off parameter $\beta$. Default is 0.01 (--beta)
+Trade-off parameter $\gamma$. Default is 0.1 (--beta)
+Learning rate $\lambda$. Default is 0.01 (--lam)
 Maximal iterations. Default is 100 (--max-iters)
 Maximal walks per vertex. Default is 32 (--maxT)
 Minimal walks per vertex. Default is 1 (--minT)
@@ -94,10 +94,11 @@ context...
 context...ok
 context...
 context...ok
-pretraining....
+pre-training....
 [*************************************************************************************************** ]100.00%
 training...
 [*************************************************************************************************** ]100.00%
+
 ```
 
 **output** (testing process)
