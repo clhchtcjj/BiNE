@@ -62,8 +62,47 @@ cd model
 python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100
 ```
 
-The embedding vectors of nodes are saved in /model-name/vectors_u.dat and /model-name/vectors_v.dat, separately.
+The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and '/model-name/vectors_v.dat', separately.
 
 
 
-## 
+## Examples
+
+**Run**
+
+```
+cd model
+python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100
+```
+
+**output** (training process)
+
+```
+======== experiment settings =========
+alpha : 0.0100, beta : 0.0100, gamma : 0.1000, lam : 0.0250, p : 0.1500, ws : 5, ns : 4, maxT :  32, minT : 1, max_iter : 100
+processing data....
+constructing graph....
+number of nodes: 6001
+walking...
+walking...ok
+number of nodes: 1177
+walking...
+walking...ok
+getting context and negative samples....
+negative samples is ok.....
+context...
+context...ok
+context...
+context...ok
+pretraining....
+[*************************************************************************************************** ]100.00%
+training...
+[*************************************************************************************************** ]100.00%
+```
+
+**output** (testing process)
+
+```
+recommendation metrics: F1 : 0.0514, MAP : 0.0142, MRR : 0.3552, NDCG : 0.0543
+```
+
