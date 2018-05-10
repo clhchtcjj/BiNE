@@ -331,6 +331,8 @@ def train(args):
             break
         sys.stdout.write(s1)
         sys.stdout.flush()
+    print("")
+    print("============== testing ===============")
     f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
     print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (f1, map, mrr, mndcg))
     save_to_file(node_list_u,node_list_v,model_path,args)
