@@ -104,6 +104,6 @@ context...ok
 
 ```
 ============== testing ===============
-recommendation metrics: F1 : 0.1122, MAP : 0.2038, MRR : 0.3318, NDCG : 0.2603
+recommendation metrics: F1 : 0.1132, MAP : 0.2041, MRR : 0.3331, NDCG : 0.2609
 ```
 
