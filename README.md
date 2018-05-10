@@ -22,6 +22,8 @@ which has been accepted by **SIGIR2018**.
 
 
 
+
+
 ## Basic Usage
 
 **Main Parameters:**
@@ -47,8 +49,8 @@ Walk stopping probability. Default is 0.15 (--p)
 
 We provide one processed dataset DBLP. It contains:
 
-- A training dataset     /data/rating_train.dat 
-- A testing dataset      /data/rating_test.dat
+- A training dataset     ./data/rating_train.dat 
+- A testing dataset      ./data/rating_test.dat
 
 
 - Each line is a instance: userID (begin with 'u')\titemID (begin with 'i') \t weight\n
@@ -59,10 +61,10 @@ Please run the '/model/train.py'
 
 ```
 cd model
-python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100
+python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp
 ```
 
-The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and '/model-name/vectors_v.dat', separately.
+The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and '/model-name/vectors_v.dat', respectively.
 
 
 
@@ -72,7 +74,7 @@ The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and
 
 ```
 cd model
-python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100
+python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp
 ```
 
 **Output** (training process)
@@ -101,6 +103,6 @@ context...ok
 **Output** (testing process)
 
 ```
-recommendation metrics: F1 : 0.1136, MAP : 0.2016, MRR : 0.3321, NDCG : 0.2589
+recommendation metrics: F1 : 0.1122, MAP : 0.2038, MRR : 0.3318, NDCG : 0.2603
 ```
 
