@@ -57,7 +57,7 @@ We provide one processed dataset DBLP. It contains:
 
   For example: u0\ti0\t1
 
-Please run the '/model/train.py' 
+Please run the './model/train.py' 
 
 ```
 cd model
