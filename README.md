@@ -26,33 +26,22 @@ which has been accepted by **SIGIR2018**.
 
 **Main Parameters:**
 
+```
 Input graph path. Defult is '../data/rating_train.dat' (--train-data)
-
 Test dataset path. Default is '../data/rating_test.dat' (--test-data)
-
 Name of model. Default is 'default' (--model-name)
-
 Number of dimensions. Default is 128 (--d)
-
 Number of negative samples. Default is 4 (--ns)
-
 Size of window. Default is 5 (--ws)
-
-Trade-off parameter $\alpha$. Default is 0.01 (--alpha)
-
-Trade-off parameter $\beta$. Default is 0.01 (--beta)
-
-Trade-off parameter $\gamma$. Default is 0.1 (--beta)
-
-Learning rate $\lambda$. Default is 0.01 (--lam)
-
+Trade-off parameter \alpha. Default is 0.01 (--alpha)
+Trade-off parameter \beta. Default is 0.01 (--beta)
+Trade-off parameter \gamma. Default is 0.1 (--beta)
+Learning rate \lambda. Default is 0.01 (--lam)
 Maximal iterations. Default is 100 (--max-iters)
-
 Maximal walks per vertex. Default is 32 (--maxT)
-
 Minimal walks per vertex. Default is 1 (--minT)
-
 Walk stopping probability. Default is 0.15 (--p)
+```
 
 **Usage**
 
@@ -68,7 +57,7 @@ We provide one processed dataset DBLP. It contains:
 
 Please run the '/model/train.py' 
 
-```python
+```
 cd model
 python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100
 ```
