@@ -264,7 +264,8 @@ def train(args):
     print('alpha : %0.4f, beta : %0.4f, gamma : %0.4f, lam : %0.4f, p : %0.4f, ws : %d, ns : %d, maxT : % d, minT : %d, max_iter : %d' % (alpha, beta, gamma, lam, args.p, args.ws, args.ns,args.maxT,args.minT,args.max_iter))
     print('========== processing data ===========')
     dul = DataUtils(model_path)
-    test_user, test_item, test_rate = dul.read_data(args.test_data)
+    if args.rec:
+        test_user, test_item, test_rate = dul.read_data(args.test_data)
     print("constructing graph....")
     gul = GraphUtils(model_path)
     gul.construct_training_graph(args.train_data)
@@ -331,11 +332,13 @@ def train(args):
             break
         sys.stdout.write(s1)
         sys.stdout.flush()
+    save_to_file(node_list_u,node_list_v,model_path,args)
     print("")
     print("============== testing ===============")
-    f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
-    print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (f1, map, mrr, mndcg))
-    save_to_file(node_list_u,node_list_v,model_path,args)
+    if args.rec:
+        f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
+        print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (f1, map, mrr, mndcg))
+    
 
 
 def ndarray_tostring(array):
@@ -378,30 +381,30 @@ def main():
                         help='maximal walks per vertex.')
 
     parser.add_argument('--minT', default=1, type=int,
-                        help='minimal walks per vertex')
+                        help='minimal walks per vertex.')
 
     parser.add_argument('--p', default=0.15, type=float,
-                        help='walk stopping probability')
+                        help='walk stopping probability.')
 
     parser.add_argument('--alpha', default=0.01, type=float,
-                        help='trade-off parameter alpha')
+                        help='trade-off parameter alpha.')
 
     parser.add_argument('--beta', default=0.01, type=float,
-                        help='trade-off parameter beta')
+                        help='trade-off parameter beta.')
 
     parser.add_argument('--gamma', default=0.1, type=float,
-                        help='trade-off parameter gamma')
+                        help='trade-off parameter gamma.')
 
     parser.add_argument('--lam', default=0.01, type=float,
-                        help='learning rate lambda')
+                        help='learning rate lambda.')
     parser.add_argument('--max-iter', default=50, type=int,
-                        help='maximal number of iterations ')
+                        help='maximal number of iterations.')
 
     parser.add_argument('--top-n', default=10, type=int,
-                        help='recommend top-n items for each user')
+                        help='recommend top-n items for each user.')
 
-    parser.add_argument('--seed', default=0, type=int,
-                        help='seed for random walk generator.')
+    parser.add_argument('--rec', default=0, type=int,
+                        help='calculate the recommendation metrics.')
 
 
     args = parser.parse_args()
