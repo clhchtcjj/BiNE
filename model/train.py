@@ -47,7 +47,10 @@ def walk_generator(gul,args):
     :return:
     """
     gul.calculate_centrality()
-    gul.homogeneous_graph_random_walks(percentage=args.p, maxT=args.maxT, minT=args.minT)
+    if args.large == 0:
+        gul.homogeneous_graph_random_walks(percentage=args.p, maxT=args.maxT, minT=args.minT)
+    elif args.large == 1:
+        gul.homogeneous_graph_random_walks_for_large_bipartite_graph(datafile=args.train_data, percentage=args.p, maxT=args.maxT, minT=args.minT)
     return gul
 
 
@@ -60,8 +63,12 @@ def get_context_and_negative_samples(gul, args):
     """
     neg_dict_u, neg_dict_v = gul.get_negs()
     print("negative samples is ok.....")
-    context_dict_u, neg_dict_u = gul.get_context_and_negatives(gul.G_u, gul.walks_u, args.ws, args.ns, neg_dict_u)
-    context_dict_v, neg_dict_v = gul.get_context_and_negatives(gul.G_v, gul.walks_v, args.ws, args.ns, neg_dict_v)
+    if args.large == 0:
+        context_dict_u, neg_dict_u = gul.get_context_and_negatives(gul.G_u, gul.walks_u, args.ws, args.ns, neg_dict_u)
+        context_dict_v, neg_dict_v = gul.get_context_and_negatives(gul.G_v, gul.walks_v, args.ws, args.ns, neg_dict_v)
+    else:
+        context_dict_u, neg_dict_u = gul.get_context_and_negatives(gul.node_u, gul.walks_u, args.ws, args.ns, neg_dict_u)
+        context_dict_v, neg_dict_v = gul.get_context_and_negatives(gul.node_v, gul.walks_v, args.ws, args.ns, neg_dict_v)
     return context_dict_u, neg_dict_u, context_dict_v, neg_dict_v,gul.node_u,gul.node_v
 
 
@@ -272,6 +279,7 @@ def train(args):
     edge_dict_u = gul.edge_dict_u
     edge_list = gul.edge_list
     walk_generator(gul,args)
+
     print("getting context and negative samples....")
     context_dict_u, neg_dict_u, context_dict_v, neg_dict_v, node_u, node_v = get_context_and_negative_samples(gul, args)
     node_list_u, node_list_v = {}, {}
@@ -406,6 +414,8 @@ def main():
     parser.add_argument('--rec', default=0, type=int,
                         help='calculate the recommendation metrics.')
 
+    parser.add_argument('--large', default=0, type=int,
+                        help='for large bipartite, do not generate homogeneous graph file.')
 
     args = parser.parse_args()
     train(args)

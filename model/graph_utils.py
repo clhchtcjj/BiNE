@@ -105,6 +105,25 @@ class GraphUtils(object):
         print("walking...ok")
         return G, walks
 
+    def homogeneous_graph_random_walks_for_large_bipartite_graph(self, datafile, percentage, maxT, minT):
+        G = graph.load_edgelist(datafile, undirected=True)
+        A,row_index,item_index= bi.biadjacency_matrix(self.G, self.node_u, self.node_v, dtype=np.float,weight='weight', format='csr')
+        index_row = dict(zip(row_index.values(), row_index.keys()))
+        index_item = dict(zip(item_index.values(), item_index.keys()))
+        AT = A.transpose()
+        matrix_u = self.get_homogenous_graph(A.dot(AT), self.fw_u, index_row, index_row)
+        matrix_v = self.get_homogenous_graph(AT.dot(A), self.fw_v, index_item, index_item)
+        self.G_u, self.walks_u = self.get_random_walks_restart_for_large_bipartite_graph(matrix_u, self.authority_u, percentage=percentage, maxT=maxT, minT=minT)
+        self.G_v, self.walks_v = self.get_random_walks_restart_for_large_bipartite_graph(matrix_v, self.authority_v, percentage=percentage, maxT=maxT, minT=minT)
+
+    def get_random_walks_restart_for_large_bipartite_graph(self, matrix, hits_dict, percentage, maxT, minT):
+        G = graph.load_edgelist_from_matrix(matrix, undirected=True)
+        print("number of nodes: {}".format(len(G.nodes())))
+        print("walking...")
+        walks = graph.build_deepwalk_corpus_random(G, hits_dict, percentage=percentage, maxT = maxT, minT = minT, alpha=0)
+        print("walking...ok")
+        return G, walks
+
     def save_words_and_sentences_to_file(self, filenodes, filesentences):
         with open(filenodes,"w") as fw:
             for node in self.G.keys():
@@ -124,7 +143,10 @@ class GraphUtils(object):
 
     def get_context_and_negatives(self,G,walks,win_size,num_negs,negs_dict):
         # generate context and negatives
-        node_list = G.nodes()
+        if isinstance(G, graph.Graph):
+            node_list = G.nodes()
+        elif isinstance(G, list):
+            node_list = G
         word2id = {}
         for i in range(len(node_list)):
             word2id[node_list[i]] = i + 1
@@ -191,6 +213,26 @@ class GraphUtils(object):
                     c = indices[col]
                     fw.write(index_row.get(r)+"\t"+index_item.get(c)+"\t"+str(data[col_index])+"\n")
                     col_index += 1
+
+    def get_homogenous_graph(self, A, datafile, index_row, index_item):
+        (M,N) = A.shape
+        csr_dict = A.__dict__
+        data = csr_dict.get("data")
+        indptr = csr_dict.get("indptr")
+        indices = csr_dict.get("indices")
+        col_index = 0
+        matrix = {}
+        with open(datafile,'w') as fw:
+            for row in range(M):
+                for col in range(indptr[row],indptr[row+1]):
+                    r = index_row.get(row)
+                    c = index_item.get(indices[col])
+                    if matrix.get(r) is None:
+                        matrix[r] = []
+                    matrix[r].append(c)
+                    col_index += 1
+
+        return matrix
 
     def read_sentences_and_homogeneous_graph(self, filesentences=None, datafile=None):
         G = graph.load_edgelist(datafile, undirected=True)
