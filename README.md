@@ -76,7 +76,7 @@ The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and
 
 ```
 cd model
-python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1
+python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 1
 ```
 
 **Output** (training process)
