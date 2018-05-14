@@ -44,6 +44,7 @@ Maximal walks per vertex. Default is 32 (--maxT)
 Minimal walks per vertex. Default is 1 (--minT)
 Walk stopping probability. Default is 0.15 (--p)
 Calculate the recommendation metrics. Default is 0 (--rec)
+For large bipartite, do not generate homogeneous graph file. Default is 0 (--large)
 ```
 
 **Usage**
@@ -62,7 +63,7 @@ Please run the './model/train.py'
 
 ```
 cd model
-python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1
+python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 1
 ```
 
 The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and '/model-name/vectors_v.dat', respectively.
