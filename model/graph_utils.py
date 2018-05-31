@@ -88,9 +88,10 @@ class GraphUtils(object):
     def homogeneous_graph_random_walks(self, percentage, maxT, minT):
         # print(len(self.node_u),len(self.node_v))
         A = bi.biadjacency_matrix(self.G, self.node_u, self.node_v, dtype=np.float,weight='weight', format='csr')
-        row_index,item_index =  A.row,A.col
+        row_index = dict(zip(self.node_u, itertools.count()))
+        col_index = dict(zip(self.node_v, itertools.count()))
         index_row = dict(zip(row_index.values(), row_index.keys()))
-        index_item = dict(zip(item_index.values(), item_index.keys()))
+        index_item = dict(zip(col_index.values(), col_index.keys()))
         AT = A.transpose()
         self.save_homogenous_graph_to_file(A.dot(AT),self.fw_u, index_row,index_row)
         self.save_homogenous_graph_to_file(AT.dot(A),self.fw_v, index_item,index_item)
