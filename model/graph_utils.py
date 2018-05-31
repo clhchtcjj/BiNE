@@ -8,6 +8,8 @@ import numpy as np
 from lsh import get_negs_by_lsh
 from io import open
 import os
+import itertools
+
 class GraphUtils(object):
     def __init__(self, model_path):
         self.model_path = model_path
@@ -85,7 +87,8 @@ class GraphUtils(object):
 
     def homogeneous_graph_random_walks(self, percentage, maxT, minT):
         # print(len(self.node_u),len(self.node_v))
-        A,row_index,item_index= bi.biadjacency_matrix(self.G, self.node_u, self.node_v, dtype=np.float,weight='weight', format='csr')
+        A = bi.biadjacency_matrix(self.G, self.node_u, self.node_v, dtype=np.float,weight='weight', format='csr')
+        row_index,item_index =  A.row,A.col
         index_row = dict(zip(row_index.values(), row_index.keys()))
         index_item = dict(zip(item_index.values(), item_index.keys()))
         AT = A.transpose()
@@ -106,10 +109,12 @@ class GraphUtils(object):
         return G, walks
 
     def homogeneous_graph_random_walks_for_large_bipartite_graph(self, datafile, percentage, maxT, minT):
-        G = graph.load_edgelist(datafile, undirected=True)
-        A,row_index,item_index= bi.biadjacency_matrix(self.G, self.node_u, self.node_v, dtype=np.float,weight='weight', format='csr')
+        # G = graph.load_edgelist(datafile, undirected=True)
+        A = bi.biadjacency_matrix(self.G, self.node_u, self.node_v, dtype=np.float,weight='weight', format='csr')
+        row_index = dict(zip(self.node_u, itertools.count()))
+        col_index = dict(zip(self.node_v, itertools.count()))
         index_row = dict(zip(row_index.values(), row_index.keys()))
-        index_item = dict(zip(item_index.values(), item_index.keys()))
+        index_item = dict(zip(col_index.values(), col_index.keys()))
         AT = A.transpose()
         matrix_u = self.get_homogenous_graph(A.dot(AT), self.fw_u, index_row, index_row)
         matrix_v = self.get_homogenous_graph(AT.dot(A), self.fw_v, index_item, index_item)
