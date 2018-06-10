@@ -45,7 +45,7 @@ def call_get_negs_by_lsh(k, sample_num, obj_dict):
             sim_list_child = set(forest.query(ms[ind], k))
             total_list = list(total_list - sim_list_child)
         total_list = random.sample(list(total_list), min(sample_num, len(total_list)))
-        for i in record:
-            key = keys[i]
+        for j in record:
+            key = keys[j]
             negs_dict[key] = total_list
     return negs_dict
