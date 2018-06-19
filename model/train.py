@@ -364,7 +364,7 @@ def train_by_sampling(args):
                     random.shuffle(context_u)
                     random.shuffle(neg_u)
                     for k, z in enumerate(context_u):
-                        tmp_z, tmp_loss = skip_gram(u, z, neg_u[k], node_list_u, lam, alpha)
+                        tmp_z, tmp_loss = skip_gram(u, z, neg_u, node_list_u, lam, alpha)
                         node_list_u[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_u[u] = index_list[-1]+3
@@ -380,7 +380,7 @@ def train_by_sampling(args):
                     random.shuffle(context_v)
                     random.shuffle(neg_v)
                     for k,z in enumerate(context_v):
-                        tmp_z, tmp_loss = skip_gram(v, z, neg_v[k], node_list_v, lam, beta)
+                        tmp_z, tmp_loss = skip_gram(v, z, neg_v, node_list_v, lam, beta)
                         node_list_v[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_v[v] = index_list[-1]+3
@@ -405,7 +405,8 @@ def train_by_sampling(args):
     if args.rec:
         print("============== testing ===============")
         f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
-        print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (f1, map, mrr, mndcg))
+        print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (round(f1,4), round(map,4), round(mrr,4), round(mndcg,4)))
+
 
 def train(args):
     model_path = os.path.join('../', args.model_name)
@@ -451,7 +452,7 @@ def train(args):
                     neg_u = neg_dict_u[u][index]
                     # center,context,neg,node_list,eta
                     for k, z in enumerate(context_u):
-                        tmp_z, tmp_loss = skip_gram(u, z, neg_u[k], node_list_u, lam, alpha)
+                        tmp_z, tmp_loss = skip_gram(u, z, neg_u, node_list_u, lam, alpha)
                         node_list_u[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_u[u] = 1
@@ -464,7 +465,7 @@ def train(args):
                     neg_v = neg_dict_v[v][index]
                     # center,context,neg,node_list,eta
                     for k,z in enumerate(context_v):
-                        tmp_z, tmp_loss = skip_gram(v, z, neg_v[k], node_list_v, lam, beta)
+                        tmp_z, tmp_loss = skip_gram(v, z, neg_v, node_list_v, lam, beta)
                         node_list_v[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_v[v] = 1
@@ -490,7 +491,7 @@ def train(args):
     if args.rec:
         print("============== testing ===============")
         f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
-        print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (f1, map, mrr, mndcg))
+        print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (round(f1,4), round(map,4), round(mrr,4), round(mndcg,4)))
     
 
 
