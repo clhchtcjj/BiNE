@@ -49,7 +49,7 @@ def walk_generator(gul,args):
     gul.calculate_centrality()
     if args.large == 0:
         gul.homogeneous_graph_random_walks(percentage=args.p, maxT=args.maxT, minT=args.minT)
-    elif args.large == 1:
+    elif args.large == 1 or args.large == 2:
         gul.homogeneous_graph_random_walks_for_large_bipartite_graph(datafile=args.train_data, percentage=args.p, maxT=args.maxT, minT=args.minT)
     return gul
 
@@ -61,15 +61,69 @@ def get_context_and_negative_samples(gul, args):
     :param args:
     :return: context_dict_u, neg_dict_u, context_dict_v, neg_dict_v,gul.node_u,gul.node_v
     """
-    neg_dict_u, neg_dict_v = gul.get_negs()
-    print("negative samples is ok.....")
+
     if args.large == 0:
+        neg_dict_u, neg_dict_v = gul.get_negs(args.ns)
+        print("negative samples is ok.....")
         context_dict_u, neg_dict_u = gul.get_context_and_negatives(gul.G_u, gul.walks_u, args.ws, args.ns, neg_dict_u)
         context_dict_v, neg_dict_v = gul.get_context_and_negatives(gul.G_v, gul.walks_v, args.ws, args.ns, neg_dict_v)
+    elif args.large == 2:
+        frequency_u, frequency_v = count(gul)
+        # print len(gul.walks_u),len(gul.walks_v)
+        table_u = initUnigramTable(frequency_u)
+        table_v = initUnigramTable(frequency_v)
+        context_dict_u, neg_dict_u = gul.get_context_and_fnegatives(gul.G_u, gul.walks_u, args.ws, args.ns, table_u,)
+        context_dict_v, neg_dict_v = gul.get_context_and_fnegatives(gul.G_v, gul.walks_v, args.ws, args.ns, table_v)
     else:
+        neg_dict_u, neg_dict_v = gul.get_negs(args.ns)
+        # print len(gul.walks_u),len(gul.walks_u)
+        print("negative samples is ok.....")
         context_dict_u, neg_dict_u = gul.get_context_and_negatives(gul.node_u, gul.walks_u, args.ws, args.ns, neg_dict_u)
         context_dict_v, neg_dict_v = gul.get_context_and_negatives(gul.node_v, gul.walks_v, args.ws, args.ns, neg_dict_v)
+
     return context_dict_u, neg_dict_u, context_dict_v, neg_dict_v,gul.node_u,gul.node_v
+
+def count(gul):
+    frequency_u = {}
+    frequency_v = {}
+    walks_u = []
+    walks_v = []
+    for walks in gul.walks_u:
+        walks_u += walks
+    for walks in gul.walks_v:
+        walks_v += walks
+
+    for node in walks_u:
+        if frequency_u.get(node) is None:
+            frequency_u[node] = 0
+        frequency_u[node] += 1
+    for node in walks_v:
+        if frequency_v.get(node) is None:
+            frequency_v[node] = 0
+        frequency_v[node] += 1
+    return frequency_u,frequency_v
+
+def initUnigramTable(frequnecy):
+    a = 0
+    i = 0
+    size = len(frequnecy)
+    train_words_pow = 0
+    d1 = 0
+    power = 0.75
+    table = {}
+    for node in frequnecy.keys():
+        train_words_pow += pow(frequnecy[node],power)
+    nodes = frequnecy.keys()
+    i = 0
+    d1 = pow(frequnecy[nodes[0]],power) / train_words_pow
+    for a in range(size):
+        table[a] = nodes[i]
+        if a*1.0 / size > d1:
+            i+=1
+            d1 += pow(frequnecy[nodes[i]],power) / train_words_pow
+        if i >= size:
+            i = size-1
+    return table
 
 
 def skip_gram(center, contexts, negs, node_list, lam, pa):
@@ -262,13 +316,102 @@ def pre_train(node_list_u, node_list_v,edge_list,edge_dict_u, args):
         sys.stdout.write(s1)
         sys.stdout.flush()
 
+def train_by_sampling(args):
+    model_path = os.path.join('../', args.model_name)
+    if os.path.exists(model_path) is False:
+        os.makedirs(model_path)
+    alpha, beta, gamma, lam = args.alpha, args.beta, args.gamma, args.lam
+    print('======== experiment settings =========')
+    print('alpha : %0.4f, beta : %0.4f, gamma : %0.4f, lam : %0.4f, p : %0.4f, ws : %d, ns : %d, maxT : % d, minT : %d, max_iter : %d, d : %d' % (alpha, beta, gamma, lam, args.p, args.ws, args.ns,args.maxT,args.minT,args.max_iter, args.d))
+    print('========== processing data ===========')
+    dul = DataUtils(model_path)
+    if args.rec:
+        test_user, test_item, test_rate = dul.read_data(args.test_data)
+    print("constructing graph....")
+    gul = GraphUtils(model_path)
+    gul.construct_training_graph(args.train_data)
+    edge_dict_u = gul.edge_dict_u
+    edge_list = gul.edge_list
+    walk_generator(gul,args)
+
+    print("getting context and negative samples....")
+    context_dict_u, neg_dict_u, context_dict_v, neg_dict_v, node_u, node_v = get_context_and_negative_samples(gul, args)
+    node_list_u, node_list_v = {}, {}
+    init_embedding_vectors(node_u, node_v, node_list_u, node_list_v, args)
+    # print("pretraining....")
+    # pre_train(node_list_u,node_list_v,edge_list,edge_dict_u,args)
+
+    last_loss, count, epsilon = 0, 0, 1e-3
+    print("============== training ==============")
+    for iter in range(0, args.max_iter):
+        s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(args.max_iter-iter),iter*100.0/(args.max_iter-1))
+        loss = 0
+        num = 0
+        visited_u = dict(zip(node_list_u.keys(), [0] * len(node_list_u.keys())))
+        visited_v = dict(zip(node_list_v.keys(), [0] * len(node_list_v.keys())))
+        random.shuffle(edge_list)
+        for i in range(len(edge_list)):
+            u, v, w = edge_list[i]
+            length = len(context_dict_u[u])
+            if visited_u.get(u) < length:
+                # print(u)
+                length = len(context_dict_u[u])
+                index_list = list(range(visited_u.get(u),min(visited_u.get(u)+1,length)))
+                for index in index_list:
+                    context_u = context_dict_u[u][index]
+                    neg_u = neg_dict_u[u][index]
+                    # center,context,neg,node_list,eta
+                    random.shuffle(context_u)
+                    for z in context_u:
+                        tmp_z, tmp_loss = skip_gram(u, z, neg_u, node_list_u, lam, alpha)
+                        node_list_u[z]['embedding_vectors'] += tmp_z
+                        loss += tmp_loss
+                visited_u[u] = index_list[-1]+3
+            length = len(context_dict_v[v])
+            if visited_v.get(v) < length:
+                # print(v)
+                length = len(context_dict_v[v])
+                index_list = list(range(visited_v.get(v),min(visited_v.get(v)+1,length)))
+                for index in index_list:
+                    context_v = context_dict_v[v][index]
+                    neg_v = neg_dict_v[v][index]
+                    # center,context,neg,node_list,eta
+                    random.shuffle(context_v)
+                    for z in context_v:
+                        tmp_z, tmp_loss = skip_gram(v, z, neg_v, node_list_v, lam, beta)
+                        node_list_v[z]['embedding_vectors'] += tmp_z
+                        loss += tmp_loss
+                visited_v[v] = index_list[-1]+3
+            update_u, update_v, tmp_loss = KL_divergence(edge_dict_u, u, v, node_list_u, node_list_v, lam, gamma)
+            loss += tmp_loss
+            node_list_u[u]['embedding_vectors'] += update_u
+            node_list_v[v]['embedding_vectors'] += update_v
+            count = iter
+            num += 1
+        delta_loss = abs(loss - last_loss)
+        if last_loss > loss:
+            lam *= 1.05
+        else:
+            lam *= 0.95
+        last_loss = loss
+        if delta_loss < epsilon:
+            break
+        sys.stdout.write(s1)
+        sys.stdout.flush()
+    save_to_file(node_list_u,node_list_v,model_path,args)
+    print("")
+    if args.rec:
+        print("============== testing ===============")
+        f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
+        print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (f1, map, mrr, mndcg))
+
 def train(args):
     model_path = os.path.join('../', args.model_name)
     if os.path.exists(model_path) is False:
         os.makedirs(model_path)
     alpha, beta, gamma, lam = args.alpha, args.beta, args.gamma, args.lam
     print('======== experiment settings =========')
-    print('alpha : %0.4f, beta : %0.4f, gamma : %0.4f, lam : %0.4f, p : %0.4f, ws : %d, ns : %d, maxT : % d, minT : %d, max_iter : %d' % (alpha, beta, gamma, lam, args.p, args.ws, args.ns,args.maxT,args.minT,args.max_iter))
+    print('alpha : %0.4f, beta : %0.4f, gamma : %0.4f, lam : %0.4f, p : %0.4f, ws : %d, ns : %d, maxT : % d, minT : %d, max_iter : %d, d : %d' % (alpha, beta, gamma, lam, args.p, args.ws, args.ns,args.maxT,args.minT,args.max_iter, args.d))
     print('========== processing data ===========')
     dul = DataUtils(model_path)
     if args.rec:
@@ -297,10 +440,10 @@ def train(args):
         visited_v = dict(zip(node_list_v.keys(), [0] * len(node_list_v.keys())))
 
         for (u, v, w) in edge_list:
-            if visited_u.get(u) == 0:
+            if visited_u.get(u) == 0 or random.random() > 0.85:
                 # print(u)
                 length = len(context_dict_u[u])
-                index_list = random.sample(list(range(length)), min(length, 10))
+                index_list = random.sample(list(range(length)), min(length, 1))
                 for index in index_list:
                     context_u = context_dict_u[u][index]
                     neg_u = neg_dict_u[u][index]
@@ -310,10 +453,10 @@ def train(args):
                         node_list_u[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_u[u] = 1
-            if visited_v.get(v) == 0:
+            if visited_v.get(v) == 0 or random.random() > 0.85:
                 # print(v)
                 length = len(context_dict_v[v])
-                index_list = random.sample(list(range(length)), min(length, 10))
+                index_list = random.sample(list(range(length)), min(length, 1))
                 for index in index_list:
                     context_v = context_dict_v[v][index]
                     neg_v = neg_dict_v[v][index]
@@ -418,7 +561,7 @@ def main():
                         help='for large bipartite, do not generate homogeneous graph file.')
 
     args = parser.parse_args()
-    train(args)
+    train_by_sampling(args)
 
 if __name__ == "__main__":
     sys.exit(main())

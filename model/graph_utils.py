@@ -142,10 +142,52 @@ class GraphUtils(object):
                         fs.write(nodes[index]+"\n")
                     else:
                         fs.write(nodes[index]+" ")
-    def get_negs(self):
-        self.negs_u, self.negs_v = get_negs_by_lsh(self.edge_dict_u,self.edge_dict_v)
+    def get_negs(self,num_negs):
+        self.negs_u, self.negs_v = get_negs_by_lsh(self.edge_dict_u,self.edge_dict_v,num_negs)
         # print(len(self.negs_u),len(self.negs_v))
         return self.negs_u, self.negs_v
+
+    def get_context_and_fnegatives(self,G,walks,win_size,num_negs,table):
+        # generate context and negatives
+        if isinstance(G, graph.Graph):
+            node_list = G.nodes()
+        elif isinstance(G, list):
+            node_list = G
+        word2id = {}
+        for i in range(len(node_list)):
+            word2id[node_list[i]] = i + 1
+        walk_list = walks
+        print("context...")
+        context_dict = {}
+        new_neg_dict = {}
+        for step in range(len(walk_list)):
+
+            walk = walk_list[step % len(walk_list)]
+            # print(walk)
+            batch_labels = []
+            # travel each walk
+            for iter in range(len(walk)):
+                start = max(0, iter - win_size)
+                end = min(len(walk), iter + win_size + 1)
+                # index: index in window
+                if context_dict.get(walk[iter]) is None:
+                    context_dict[walk[iter]] = []
+                    new_neg_dict[walk[iter]] = []
+                labels_list = []
+                neg_sample = []
+                for index in range(start, end):
+                    labels_list.append(walk[index])
+                while len(neg_sample) < num_negs:
+                    sa = random.choice(range(len(node_list)))
+                    if table[sa] in labels_list:
+                        continue
+                    neg_sample.append(table[sa])
+                context_dict[walk[iter]].append(labels_list)
+                new_neg_dict[walk[iter]].append(neg_sample)
+            if len(batch_labels) == 0:
+                continue
+        print("context...ok")
+        return context_dict, new_neg_dict
 
     def get_context_and_negatives(self,G,walks,win_size,num_negs,negs_dict):
         # generate context and negatives
