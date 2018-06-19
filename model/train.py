@@ -362,8 +362,9 @@ def train_by_sampling(args):
                     neg_u = neg_dict_u[u][index]
                     # center,context,neg,node_list,eta
                     random.shuffle(context_u)
-                    for z in context_u:
-                        tmp_z, tmp_loss = skip_gram(u, z, neg_u, node_list_u, lam, alpha)
+                    random.shuffle(neg_u)
+                    for k, z in enumerate(context_u):
+                        tmp_z, tmp_loss = skip_gram(u, z, neg_u[k], node_list_u, lam, alpha)
                         node_list_u[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_u[u] = index_list[-1]+3
@@ -377,8 +378,9 @@ def train_by_sampling(args):
                     neg_v = neg_dict_v[v][index]
                     # center,context,neg,node_list,eta
                     random.shuffle(context_v)
-                    for z in context_v:
-                        tmp_z, tmp_loss = skip_gram(v, z, neg_v, node_list_v, lam, beta)
+                    random.shuffle(neg_v)
+                    for k,z in enumerate(context_v):
+                        tmp_z, tmp_loss = skip_gram(v, z, neg_v[k], node_list_v, lam, beta)
                         node_list_v[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_v[v] = index_list[-1]+3
@@ -448,8 +450,8 @@ def train(args):
                     context_u = context_dict_u[u][index]
                     neg_u = neg_dict_u[u][index]
                     # center,context,neg,node_list,eta
-                    for z in context_u:
-                        tmp_z, tmp_loss = skip_gram(u, z, neg_u, node_list_u, lam, alpha)
+                    for k, z in enumerate(context_u):
+                        tmp_z, tmp_loss = skip_gram(u, z, neg_u[k], node_list_u, lam, alpha)
                         node_list_u[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_u[u] = 1
@@ -461,8 +463,8 @@ def train(args):
                     context_v = context_dict_v[v][index]
                     neg_v = neg_dict_v[v][index]
                     # center,context,neg,node_list,eta
-                    for z in context_v:
-                        tmp_z, tmp_loss = skip_gram(v, z, neg_v, node_list_v, lam, beta)
+                    for k,z in enumerate(context_v):
+                        tmp_z, tmp_loss = skip_gram(v, z, neg_v[k], node_list_v, lam, beta)
                         node_list_v[z]['embedding_vectors'] += tmp_z
                         loss += tmp_loss
                 visited_v[v] = 1

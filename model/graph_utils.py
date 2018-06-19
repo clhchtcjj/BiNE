@@ -216,6 +216,7 @@ class GraphUtils(object):
                     context_dict[walk[iter]] = []
                     new_neg_dict[walk[iter]] = []
                 labels_list = []
+                neg_sample = []
                 negs = negs_dict[walk[iter]]
                 for index in range(start, end):
                     if walk[index] in negs:
@@ -224,7 +225,7 @@ class GraphUtils(object):
                         continue
                     else:
                         labels_list.append(walk[index])
-                neg_sample = random.sample(negs,min(num_negs,len(negs)))
+                        neg_sample.append(random.sample(negs,min(num_negs,len(negs))))
                 context_dict[walk[iter]].append(labels_list)
                 new_neg_dict[walk[iter]].append(neg_sample)
             if len(batch_labels) == 0:
