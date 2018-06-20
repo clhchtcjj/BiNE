@@ -203,10 +203,8 @@ class GraphUtils(object):
         context_dict = {}
         new_neg_dict = {}
         for step in range(len(walk_list)):
-
             walk = walk_list[step % len(walk_list)]
             # print(walk)
-            batch_labels = []
             # travel each walk
             for iter in range(len(walk)):
                 start = max(0, iter - win_size)
@@ -228,8 +226,6 @@ class GraphUtils(object):
                 neg_sample = random.sample(negs,min(num_negs,len(negs)))
                 context_dict[walk[iter]].append(labels_list)
                 new_neg_dict[walk[iter]].append(neg_sample)
-            if len(batch_labels) == 0:
-                continue
         print("context...ok")
         return context_dict, new_neg_dict
         # with open(context_file,'w', encoding='utf-8') as fw1, open(neg_file,'w', encoding='utf-8') as fw2:

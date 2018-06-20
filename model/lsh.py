@@ -19,8 +19,8 @@ def construct_lsh(obj_dict):
     return forest, keys, ms
 
 def get_negs_by_lsh(user_dict, item_dict, num_negs):
-    k_u = max(100, len(user_dict) // 50)
-    k_v = max(100, len(item_dict) // 50) 
+    k_u = max(200, len(user_dict) // 50)
+    k_v = max(200, len(item_dict) // 50) 
     sample_num_u = max(250, int(len(user_dict)*0.01*num_negs))
     sample_num_v = max(250, int(len(item_dict)*0.01*num_negs))
     negs_u = call_get_negs_by_lsh(k_u,sample_num_u,user_dict)
