@@ -98,7 +98,7 @@ def skip_gram(center, contexts, negs, node_list, lam, pa):
         if node_list.get(u) is  None:
             pass
         Theta = np.array(node_list[u]['context_vectors'])
-        X = float(max(V.dot(Theta.T), 0))
+        X = float(V.dot(Theta.T))
         sigmod = 1.0 / (1 + (math.exp(-X * 1.0)))
         update += pa * lam * (I_z[u] - sigmod) * Theta
         node_list[u]['context_vectors'] += pa * lam * (I_z[u] - sigmod) * V
