@@ -6,7 +6,7 @@ import random
 
 def construct_lsh(obj_dict):
     lsh_0 = MinHashLSH(threshold=0, num_perm=128,params=None)
-    lsh_5 = MinHashLSH(threshold=0.5, num_perm=128,params=None)
+    lsh_5 = MinHashLSH(threshold=0.6, num_perm=128,params=None)
     # forest = MinHashLSHForest(num_perm=128)
     keys = obj_dict.keys()
     values = obj_dict.values()
@@ -21,8 +21,8 @@ def construct_lsh(obj_dict):
     return lsh_0,lsh_5, keys, ms
 
 def get_negs_by_lsh(user_dict, item_dict, num_negs):
-    sample_num_u = max(250, int(len(user_dict)*0.01*num_negs))
-    sample_num_v = max(250, int(len(item_dict)*0.01*num_negs))
+    sample_num_u = max(300, int(len(user_dict)*0.01*num_negs))
+    sample_num_v = max(300, int(len(item_dict)*0.01*num_negs))
     negs_u = call_get_negs_by_lsh(sample_num_u,user_dict)
     negs_v = call_get_negs_by_lsh(sample_num_v,item_dict)
     return negs_u,negs_v

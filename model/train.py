@@ -134,8 +134,8 @@ def KL_divergence(edge_dict_u, u, v, node_list_u, node_list_v, lam, gamma):
 
     sigmod = 1.0 / (1 + (math.exp(-X * 1.0)))
 
-    update_u += gamma * lam * ((e_ij * (1 - sigmod)) * 1.0 / math.log(10, math.e)) * V
-    update_v += gamma * lam * ((e_ij * (1 - sigmod)) * 1.0 / math.log(10, math.e)) * U
+    update_u += gamma * lam * ((e_ij * (1 - sigmod)) * 1.0 / math.log(math.e, math.e)) * V
+    update_v += gamma * lam * ((e_ij * (1 - sigmod)) * 1.0 / math.log(math.e, math.e)) * U
 
     try:
         loss += gamma * e_ij * math.log(sigmod)
@@ -247,7 +247,7 @@ def pre_train(node_list_u, node_list_v,edge_list,edge_dict_u, args):
     last_loss = 0
     epsilon = 1e-3
     for iter in range(0, 50):
-        s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(args.max_iter-iter),iter*50.0/(args.max_iter-1))
+        s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(50-iter),iter*50.0/(args.max_iter-1))
         loss = 0
         num = 0
         for (u, v, w) in edge_list:
@@ -289,9 +289,6 @@ def train_by_sampling(args):
     context_dict_u, neg_dict_u, context_dict_v, neg_dict_v, node_u, node_v = get_context_and_negative_samples(gul, args)
     node_list_u, node_list_v = {}, {}
     init_embedding_vectors(node_u, node_v, node_list_u, node_list_v, args)
-    # print("pretraining....")
-    # pre_train(node_list_u,node_list_v,edge_list,edge_dict_u,args)
-
     last_loss, count, epsilon = 0, 0, 1e-3
     print("============== training ==============")
     for iter in range(0, args.max_iter):

@@ -214,7 +214,6 @@ class GraphUtils(object):
                     context_dict[walk[iter]] = []
                     new_neg_dict[walk[iter]] = []
                 labels_list = []
-                neg_sample = []
                 negs = negs_dict[walk[iter]]
                 for index in range(start, end):
                     if walk[index] in negs:
