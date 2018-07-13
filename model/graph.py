@@ -260,7 +260,7 @@ class Graph(defaultdict):
       #   break
     # return path
 
-  def random_walk_restart_for_large_bipartite_graph(self, nodes, matrix, percentage, alpha=0, rand=random.Random(), start=None):
+  def random_walk_restart_for_large_bipartite_graph(self, nodes, percentage, alpha=0, rand=random.Random(), start=None):
     """ Returns a truncated random walk.
         percentage: probability of stopping walking
         alpha: probability of restarts.
@@ -272,33 +272,17 @@ class Graph(defaultdict):
     else:
       # Sampling is uniform w.r.t V, and not w.r.t E
       path = [rand.choice(nodes)]
-    buffer_neighbors = {}
     while len(path) < 1 or random.random() > percentage:
       cur = path[-1]
-    #   if len(G[cur]) > 0:
-    #     if rand.random() >= alpha:
-    #       v = rand.choice(G[cur])
-    #       # cnt = 0
-    #       # while len(G[v]) <= 1:
-    #       #   if cnt == 5:
-    #       #     break
-    #       #   cnt+=1
-    #       #   v = rand.choice(G[cur])
-    #       add_node = rand.choice(G[v])
-    #       # while add_node == cur and len(G[v])>1:
-    #       #   v = rand.choice(G[cur])
-    #       #   add_node = rand.choice(G[v])
-    #       path.append(add_node)
-    #     else:
-    #       path.append(path[0])
-    #   else:
-    #     break
-    # return path 
-      neighbors = matrix[cur]
+      neighbors = set([])
+      for nei in G[cur]:
+          neighbors = neighbors.union(set(G[nei]))
+      # print(len(neighbors))
+      neighbors = list(neighbors)
       if len(G[cur]) > 0:
         if rand.random() >= alpha:
           add_node = rand.choice(neighbors)
-          while add_node == cur:
+          while add_node == cur and len(neighbors) > 1:
             add_node = rand.choice(neighbors)
           path.append(add_node)
         else:
@@ -343,22 +327,24 @@ def build_deepwalk_corpus_random(G, hits_dict, percentage, maxT, minT, alpha=0, 
   random.shuffle(walks)
   return walks
 
-def build_deepwalk_corpus_random_for_large_bibartite_graph(G, matrix, hits_dict, percentage, maxT, minT, alpha=0, rand = random.Random(), node_type='u'):
+def build_deepwalk_corpus_random_for_large_bibartite_graph(G, hits_dict, percentage, maxT, minT, alpha=0, rand = random.Random(), node_type='u'):
   walks = []
   nodes_total = list(G.nodes())
   nodes = []
+  # print(len(nodes),node_type)
   for obj in nodes_total:
     if obj[0] == node_type:
       nodes.append(obj)
-  cnt_0 = 1
+  # cnt_0 = 1
+  # print(len(nodes))
   for node in nodes:
-    if cnt_0 % 10000 == 0:
-      print(cnt_0)
-    cnt_0 += 1
+    # if cnt_0 % 1000 == 0:
+    #   print(cnt_0)
+    # cnt_0 += 1
     num_paths = max(int(math.ceil(maxT * hits_dict[node])),minT)
     # print num_paths,
     for cnt in range(num_paths):
-     walks.append(G.random_walk_restart_for_large_bipartite_graph(nodes, matrix, percentage,rand=rand, alpha=alpha, start=node))
+     walks.append(G.random_walk_restart_for_large_bipartite_graph(nodes, percentage,rand=rand, alpha=alpha, start=node))
   random.shuffle(walks)
   return walks
 

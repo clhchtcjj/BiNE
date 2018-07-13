@@ -12,6 +12,7 @@ import random
 import math
 import os
 
+
 def init_embedding_vectors(node_u, node_v, node_list_u, node_list_v, args):
     """
     initialize embedding vectors
@@ -49,8 +50,10 @@ def walk_generator(gul,args):
     gul.calculate_centrality()
     if args.large == 0:
         gul.homogeneous_graph_random_walks(percentage=args.p, maxT=args.maxT, minT=args.minT)
-    elif args.large == 1 or args.large == 2:
-        gul.homogeneous_graph_random_walks_for_large_bipartite_graph(datafile=args.train_data, percentage=args.p, maxT=args.maxT, minT=args.minT)
+    elif args.large == 1:
+        gul.homogeneous_graph_random_walks_for_large_bipartite_graph(percentage=args.p, maxT=args.maxT, minT=args.minT)
+    elif args.large == 2:
+        gul.homogeneous_graph_random_walks_for_large_bipartite_graph_without_generating(datafile=args.train_data,percentage=args.p,maxT=args.maxT, minT=args.minT)
     return gul
 
 
@@ -130,7 +133,7 @@ def KL_divergence(edge_dict_u, u, v, node_list_u, node_list_v, lam, gamma):
     update_v = 0
     U = np.array(node_list_u[u]['embedding_vectors'])
     V = np.array(node_list_v[v]['embedding_vectors'])
-    X = float(max(U.dot(V.T), 0))
+    X = float(U.dot(V.T))
 
     sigmod = 1.0 / (1 + (math.exp(-X * 1.0)))
 
@@ -246,8 +249,8 @@ def pre_train(node_list_u, node_list_v,edge_list,edge_dict_u, args):
     alpha, beta, gamma, lam = args.alpha, args.beta, args.gamma, args.lam
     last_loss = 0
     epsilon = 1e-3
-    for iter in range(0, 50):
-        s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(50-iter),iter*50.0/(args.max_iter-1))
+    for iter in range(0, 100):
+        s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(100-iter),iter*100.0/(args.max_iter-1))
         loss = 0
         num = 0
         for (u, v, w) in edge_list:
@@ -266,6 +269,12 @@ def pre_train(node_list_u, node_list_v,edge_list,edge_dict_u, args):
             break
         sys.stdout.write(s1)
         sys.stdout.flush()
+    # with open(r"../data/puv.dat",'w') as fw:
+    #     for u,v,rate in edge_list:
+    #         U = node_list_u[u]['embedding_vectors']
+    #         V = node_list_v[v]['embedding_vectors']
+    #         X = float(U.dot(V.T))
+    #         fw.write(str(u)+"\t"+str(v)+"\t"+str(rate)+"\t"+str(X)+"\t"+str(1.0 / (1 + (math.exp(-X * 1.0))))+"\n")
 
 def train_by_sampling(args):
     model_path = os.path.join('../', args.model_name)
@@ -284,12 +293,15 @@ def train_by_sampling(args):
     edge_dict_u = gul.edge_dict_u
     edge_list = gul.edge_list
     walk_generator(gul,args)
-
     print("getting context and negative samples....")
     context_dict_u, neg_dict_u, context_dict_v, neg_dict_v, node_u, node_v = get_context_and_negative_samples(gul, args)
     node_list_u, node_list_v = {}, {}
     init_embedding_vectors(node_u, node_v, node_list_u, node_list_v, args)
     last_loss, count, epsilon = 0, 0, 1e-3
+    # pre_train(node_list_u, node_list_v,edge_list,edge_dict_u, args)
+    # f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
+    # print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (round(f1,4), round(map,4), round(mrr,4), round(mndcg,4)))
+
     print("============== training ==============")
     for iter in range(0, args.max_iter):
         s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(args.max_iter-iter),iter*100.0/(args.max_iter-1))
@@ -503,11 +515,11 @@ def main():
     parser.add_argument('--top-n', default=10, type=int,
                         help='recommend top-n items for each user.')
 
-    parser.add_argument('--rec', default=0, type=int,
+    parser.add_argument('--rec', default=1, type=int,
                         help='calculate the recommendation metrics.')
 
     parser.add_argument('--large', default=0, type=int,
-                        help='for large bipartite, do not generate homogeneous graph file.')
+                        help='for large bipartite, 1 do not generate homogeneous graph file; 2 do not generate homogeneous graph')
 
     args = parser.parse_args()
     train_by_sampling(args)

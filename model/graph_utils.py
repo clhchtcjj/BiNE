@@ -109,8 +109,7 @@ class GraphUtils(object):
         print("walking...ok")
         return G, walks
 
-    def homogeneous_graph_random_walks_for_large_bipartite_graph(self, datafile, percentage, maxT, minT):
-        # G = graph.load_edgelist(datafile, undirected=True)
+    def homogeneous_graph_random_walks_for_large_bipartite_graph(self, percentage, maxT, minT):
         A = bi.biadjacency_matrix(self.G, self.node_u, self.node_v, dtype=np.float,weight='weight', format='csr')
         row_index = dict(zip(self.node_u, itertools.count()))
         col_index = dict(zip(self.node_v, itertools.count()))
@@ -122,6 +121,10 @@ class GraphUtils(object):
         self.G_u, self.walks_u = self.get_random_walks_restart_for_large_bipartite_graph(matrix_u, self.authority_u, percentage=percentage, maxT=maxT, minT=minT)
         self.G_v, self.walks_v = self.get_random_walks_restart_for_large_bipartite_graph(matrix_v, self.authority_v, percentage=percentage, maxT=maxT, minT=minT)
 
+    def homogeneous_graph_random_walks_for_large_bipartite_graph_without_generating(self, datafile, percentage, maxT, minT):
+        self.G_u, self.walks_u = self.get_random_walks_restart_for_large_bipartite_graph_without_generating(datafile, self.authority_u, percentage=percentage, maxT=maxT, minT=minT, node_type='u')
+        self.G_v, self.walks_v = self.get_random_walks_restart_for_large_bipartite_graph_without_generating(datafile, self.authority_v, percentage=percentage, maxT=maxT, minT=minT,node_type='i')
+
     def get_random_walks_restart_for_large_bipartite_graph(self, matrix, hits_dict, percentage, maxT, minT):
         G = graph.load_edgelist_from_matrix(matrix, undirected=True)
         print("number of nodes: {}".format(len(G.nodes())))
@@ -129,6 +132,22 @@ class GraphUtils(object):
         walks = graph.build_deepwalk_corpus_random(G, hits_dict, percentage=percentage, maxT = maxT, minT = minT, alpha=0)
         print("walking...ok")
         return G, walks
+
+    def get_random_walks_restart_for_large_bipartite_graph_without_generating(self, datafile, hits_dict, percentage, maxT, minT, node_type='u'):
+        if datafile is None:
+            datafile = os.path.join(self.model_path,"rating_train.dat")
+        G = graph.load_edgelist(datafile, undirected=True)
+        cnt = 0
+        for n in G.nodes():
+            if n[0] == node_type:
+                cnt += 1
+        print("number of nodes: {}".format(cnt))
+        print("walking...")
+        walks = graph.build_deepwalk_corpus_random_for_large_bibartite_graph(G, hits_dict, percentage=percentage, maxT = maxT, minT = minT, alpha=0,node_type=node_type)
+        # print(walks)
+        print("walking...ok")
+        return G, walks
+
 
     def save_words_and_sentences_to_file(self, filenodes, filesentences):
         with open(filenodes,"w") as fw:
