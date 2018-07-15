@@ -298,10 +298,6 @@ def train_by_sampling(args):
     node_list_u, node_list_v = {}, {}
     init_embedding_vectors(node_u, node_v, node_list_u, node_list_v, args)
     last_loss, count, epsilon = 0, 0, 1e-3
-    # pre_train(node_list_u, node_list_v,edge_list,edge_dict_u, args)
-    # f1, map, mrr, mndcg = top_N(test_user,test_item,test_rate,node_list_u,node_list_v,args.top_n)
-    # print('recommendation metrics: F1 : %0.4f, MAP : %0.4f, MRR : %0.4f, NDCG : %0.4f' % (round(f1,4), round(map,4), round(mrr,4), round(mndcg,4)))
-
     print("============== training ==============")
     for iter in range(0, args.max_iter):
         s1 = "\r[%s%s]%0.2f%%"%("*"* iter," "*(args.max_iter-iter),iter*100.0/(args.max_iter-1))
