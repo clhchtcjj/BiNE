@@ -44,6 +44,11 @@ Maximal walks per vertex. Default is 32 (--maxT)
 Minimal walks per vertex. Default is 1 (--minT)
 Walk stopping probability. Default is 0.15 (--p)
 Calculate the recommendation metrics. Default is 0 (--rec)
+Calculate the link prediction. Default is 0 (--lip)
+File of training data for LR. Default is '../data/wiki/case_train.dat' (--case-train)
+File of testing data for LR. Default is '../data/wiki/case_test.dat' (--case-test)
+File of embedding vectors of U. Default is '../data/vectors_u.dat' (--vectors-u)
+File of embedding vectors of V. Default is '../data/vectors_v.dat' (--vectors-v)
 For large bipartite, 1 do not generate homogeneous graph file; 2 do not generate homogeneous graph. Default is 0 (--large)
 ```
 
@@ -63,7 +68,7 @@ Please run the './model/train.py'
 
 ```
 cd model
-python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2
+python train.py --train-data ../data/dblp/rating_train.dat --test-data ../data/dblp/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2 --vectors-u ../data/dblp/vectors_u.dat --vectors-v ../data/wiki/vectors_v.dat
 ```
 
 The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and '/model-name/vectors_v.dat', respectively.
@@ -72,11 +77,13 @@ The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and
 
 ## Example
 
+### Recommendation
+
 **Run**
 
 ```
 cd model
-python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2
+python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2 --vectors-u ../data/dblp/vectors_u.dat --vectors-v ../data/dblp/vectors_v.dat
 ```
 
 **Output** (training process)
@@ -107,5 +114,46 @@ context...ok
 ```
 ============== testing ===============
 recommendation metrics: F1 : 0.1132, MAP : 0.2041, MRR : 0.3331, NDCG : 0.2609
+```
+
+
+
+### Link Prediction
+
+**Run**
+
+```
+cd model
+python train.py --train-data ../data/wiki/rating_train.dat --test-data ../data/wiki/rating_test.dat --lam 0.01 --max-iter 100 --model-name wiki --lip 1 --large 2 --gamma 1 --vectors-u ../data/wiki/vectors_u.dat --vectors-v ../data/wiki/vectors_v.dat --case-train ../data/wiki/case_train.dat --case-test ../data/wiki/case_test.dat
+```
+
+**Output** (training process)
+
+```
+======== experiment settings =========
+alpha : 0.0100, beta : 0.0100, gamma : 1.0000, lam : 0.0100, p : 0.1500, ws : 5, ns : 4, maxT :  32, minT : 1, max_iter : 100, d : 128
+========== processing data ===========
+constructing graph....
+number of nodes: 15000
+walking...
+walking...ok
+number of nodes: 2169
+walking...
+walking...ok
+getting context and negative samples....
+negative samples is ok.....
+context...
+context...ok
+context...
+context...ok
+============== training ==============
+[*************************************************************************************************** ]100.00%
+```
+
+**Output** (testing process)
+
+```
+============== testing ===============
+link prediction metrics: AUC_ROC : 0.9271, AUC_PR : 0.9458
 ```
 
