@@ -137,7 +137,7 @@ constructing graph....
 number of nodes: 15000
 walking...
 walking...ok
-number of nodes: 2169
+number of nodes: 2529
 walking...
 walking...ok
 getting context and negative samples....
@@ -154,6 +154,6 @@ context...ok
 
 ```
 ============== testing ===============
-link prediction metrics: AUC_ROC : 0.9271, AUC_PR : 0.9458
+link prediction metrics: AUC_ROC : 0.9468, AUC_PR : 0.9614
 ```
 
