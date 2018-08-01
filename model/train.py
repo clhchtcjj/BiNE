@@ -303,9 +303,9 @@ def link_prediction(args):
     return metrics.auc(fpr,tpr), average_precision
 
 def train_by_sampling(args):
-    # model_path = os.path.join('../', args.model_name)
-    # if os.path.exists(model_path) is False:
-    #     os.makedirs(model_path)
+    model_path = os.path.join('../', args.model_name)
+    if os.path.exists(model_path) is False:
+        os.makedirs(model_path)
     alpha, beta, gamma, lam = args.alpha, args.beta, args.gamma, args.lam
     print('======== experiment settings =========')
     print('alpha : %0.4f, beta : %0.4f, gamma : %0.4f, lam : %0.4f, p : %0.4f, ws : %d, ns : %d, maxT : % d, minT : %d, max_iter : %d, d : %d' % (alpha, beta, gamma, lam, args.p, args.ws, args.ns,args.maxT,args.minT,args.max_iter, args.d))
