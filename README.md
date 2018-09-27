@@ -68,7 +68,7 @@ Please run the './model/train.py'
 
 ```
 cd model
-python train.py --train-data ../data/dblp/rating_train.dat --test-data ../data/dblp/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2 --vectors-u ../data/dblp/vectors_u.dat --vectors-v ../data/wiki/vectors_v.dat
+python train.py --train-data ../data/dblp/rating_train.dat --test-data ../data/dblp/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2 --vectors-u ../data/dblp/vectors_u.dat --vectors-v ../data/dblp/vectors_v.dat
 ```
 
 The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and '/model-name/vectors_v.dat', respectively.
