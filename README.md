@@ -50,6 +50,7 @@ File of testing data for LR. Default is '../data/wiki/case_test.dat' (--case-tes
 File of embedding vectors of U. Default is '../data/vectors_u.dat' (--vectors-u)
 File of embedding vectors of V. Default is '../data/vectors_v.dat' (--vectors-v)
 For large bipartite, 1 do not generate homogeneous graph file; 2 do not generate homogeneous graph. Default is 0 (--large)
+Mertics of centrality. Default is 'hits', options: 'hits' and 'degree_centrality' (--mode)
 ```
 
 **Usage**
@@ -83,7 +84,7 @@ The embedding vectors of nodes are saved in file '/model-name/vectors_u.dat' and
 
 ```
 cd model
-python train.py --train-data ../data/rating_train.dat --test-data ../data/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2 --vectors-u ../data/dblp/vectors_u.dat --vectors-v ../data/dblp/vectors_v.dat
+python train.py --train-data ../data/dblp/rating_train.dat --test-data ../data/dblp/rating_test.dat --lam 0.025 --max-iter 100 --model-name dblp --rec 1 --large 2 --vectors-u ../data/dblp/vectors_u.dat --vectors-v ../data/dblp/vectors_v.dat
 ```
 
 **Output** (training process)
