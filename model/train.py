@@ -52,7 +52,7 @@ def walk_generator(gul,args):
     :param args:
     :return:
     """
-    gul.calculate_centrality()
+    gul.calculate_centrality(args.mode)
     if args.large == 0:
         gul.homogeneous_graph_random_walks(percentage=args.p, maxT=args.maxT, minT=args.minT)
     elif args.large == 1:
@@ -564,6 +564,9 @@ def main():
 
     parser.add_argument('--large', default=0, type=int,
                         help='for large bipartite, 1 do not generate homogeneous graph file; 2 do not generate homogeneous graph')
+
+    parser.add_argument('--mode', default='hits', type=str,
+                        help='metrics of centrality')
 
     args = parser.parse_args()
     train_by_sampling(args)

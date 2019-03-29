@@ -57,8 +57,12 @@ class GraphUtils(object):
         self.G.add_weighted_edges_from(edge_list_u_v+edge_list_v_u)
         self.edge_list = edge_list_u_v
 
-    def calculate_centrality(self):
-        h, a = nx.hits(self.G)
+    def calculate_centrality(self, mode='hits'):
+        if mode == 'degree_centrality':
+            a = nx.degree_centrality(self.G)
+        else:
+            h, a = nx.hits(self.G)
+
         max_a_u, min_a_u,max_a_v,min_a_v = 0, 100000, 0, 100000
 
         for node in self.G.nodes():
