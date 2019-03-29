@@ -50,6 +50,7 @@ File of testing data for LR. Default is '../data/wiki/case_test.dat' (--case-tes
 File of embedding vectors of U. Default is '../data/vectors_u.dat' (--vectors-u)
 File of embedding vectors of V. Default is '../data/vectors_v.dat' (--vectors-v)
 For large bipartite, 1 do not generate homogeneous graph file; 2 do not generate homogeneous graph. Default is 0 (--large)
+Mertics of centrality. Default is 'hits', options: 'hits' and 'degree_centrality' (--mode)
 ```
 
 **Usage**
