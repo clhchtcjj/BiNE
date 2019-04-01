@@ -55,11 +55,17 @@ Mertics of centrality. Default is 'hits', options: 'hits' and 'degree_centrality
 
 **Usage**
 
-We provide one processed dataset DBLP. It contains:
+We provide two processed dataset:
 
-- A training dataset     ./data/rating_train.dat 
-- A testing dataset      ./data/rating_test.dat
+- DBLP (for recommendation). It contains:
 
+  - A training dataset     ./data/dblp/rating_train.dat 
+  - A testing dataset      ./data/dblp/rating_test.dat
+
+- Wikipedia (for link prediction). It contains:
+
+  - A training dataset     ./data/wiki/rating_train.dat 
+  - A testing dataset      ./data/wiki/rating_test.dat
 
 - Each line is a instance: userID (begin with 'u')\titemID (begin with 'i') \t weight\n
 
