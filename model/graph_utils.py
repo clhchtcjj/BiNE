@@ -48,10 +48,8 @@ class GraphUtils(object):
                 edge_list_v_u.append((item, user, float(rating)))
                 line = fin.readline()
         # create bipartite graph
-        self.node_u = self.edge_dict_u.keys()
-        self.node_v = self.edge_dict_v.keys()
-        self.node_u.sort()
-        self.node_v.sort()
+        self.node_u = sorted(self.edge_dict_u.keys())
+        self.node_v = sorted(self.edge_dict_v.keys())
         self.G.add_nodes_from(self.node_u, bipartite=0)
         self.G.add_nodes_from(self.node_v, bipartite=1)
         self.G.add_weighted_edges_from(edge_list_u_v+edge_list_v_u)

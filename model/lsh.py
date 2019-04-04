@@ -8,8 +8,8 @@ def construct_lsh(obj_dict):
     lsh_0 = MinHashLSH(threshold=0, num_perm=128,params=None)
     lsh_5 = MinHashLSH(threshold=0.6, num_perm=128,params=None)
     # forest = MinHashLSHForest(num_perm=128)
-    keys = obj_dict.keys()
-    values = obj_dict.values()
+    keys = list(obj_dict.keys())
+    values = list(obj_dict.values())
     ms = []
     for i in range(len(keys)):
         temp = MinHash(num_perm=128)
