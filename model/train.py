@@ -69,7 +69,7 @@ def get_context_and_negative_samples(gul, args):
     :param args:
     :return: context_dict_u, neg_dict_u, context_dict_v, neg_dict_v,gul.node_u,gul.node_v
     """
-
+x
     if args.large == 0:
         neg_dict_u, neg_dict_v = gul.get_negs(args.ns)
         print("negative samples is ok.....")
@@ -153,7 +153,7 @@ def KL_divergence(edge_dict_u, u, v, node_list_u, node_list_v, lam, gamma):
         # print(U,V,sigmod,X,math.exp(-X * 1.0),round(math.exp(-X * 1.0),10))
     return update_u, update_v, loss
 
-def top_N(test_u, test_v, test_rate, node_list_u, node_list_v, top_n):
+        def top_N(test_u, test_v, test_rate, node_list_u, node_list_v, top_n):
     recommend_dict = {}
     for u in test_u:
         recommend_dict[u] = {}
@@ -177,7 +177,7 @@ def top_N(test_u, test_v, test_rate, node_list_u, node_list_v, top_n):
 
     for u in test_u:
         tmp_r = sorted(recommend_dict[u].items(), lambda x, y: cmp(x[1], y[1]), reverse=True)[0:min(len(recommend_dict[u]),top_n)]
-        tmp_t = sorted(test_rate[u].items(), lambda x, y: cmp(x[1], y[1]), reverse=True)[0:min(len(test_rate[u]),top_n))]
+        tmp_t = sorted(test_rate[u].items(), lambda x, y: cmp(x[1], y[1]), reverse=True)[0:min(len(test_rate[u]),top_n)]
         tmp_r_list = []
         tmp_t_list = []
         for (item, rate) in tmp_r:
